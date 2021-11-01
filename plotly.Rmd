@@ -1,10 +1,47 @@
 ---
-title: "About"
+title: "Plotly"
 output: 
   html_document:
     toc: true
     toc_float: true
 ---
-This website is about how cool the internet is!!
 
-Here's back to the [index](index.html) page.
+This page is about making some plotly examples. 
+
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+
+library(plotly)
+```
+
+
+Let's look at the NYC airbnb data. 
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb %>% 
+  mutate(stars = review_scores_location / 2) %>% 
+  select(neighbourhood_group, neighbourhood, stars, price, room_type, lat, long) %>% 
+  filter(
+    neighbourhood_group == "Manhattan",
+    room_type == "Entire home/apt",
+    price %in% 100:500) %>% 
+  drop_na(stars)
+```
+
+
+## Make a scatterplot 
+
+Here's a plotly scatterplot! 
+
+```{r}
+nyc_airbnb %>%
+  mutate(
+    text_label = str_c("Price: $", price, "\nStars: ", stars)) %>% 
+  plot_ly(
+    x = ~ lat, y = ~ long, type = "scatter", mode = "markers", color = ~price, text = ~text_label, alpha = 0.5)
+```
+
